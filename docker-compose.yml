@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: indoplat-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - indoplat
+    depends_on:
+      - db
+
+  webserver:
+    image: nginx:alpine
+    container_name: indoplat-webserver
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - indoplat
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: indoplat-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: indoplat
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: password
+      MYSQL_USER: indoplat
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - "3306:3306"
+    networks:
+      - indoplat
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: indoplat-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    networks:
+      - indoplat
+    depends_on:
+      - db
+
+volumes:
+  dbdata:
+    driver: local
+
+networks:
+  indoplat:
+    driver: bridge

@@ -9,7 +9,10 @@ use Illuminate\Http\Request;
 class TaskService
 {
     /**
-     * Get paginated tasks with optional filters and ordering.
+     * Summary of getPaginated
+     * @param \Illuminate\Http\Request $request
+     * @param int $perPage
+     * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getPaginated(Request $request, int $perPage = 10): LengthAwarePaginator
     {
@@ -26,7 +29,9 @@ class TaskService
     }
 
     /**
-     * Create a new task from validated data.
+     * Summary of create
+     * @param array $validated
+     * @return Task
      */
     public function create(array $validated): Task
     {
@@ -35,6 +40,9 @@ class TaskService
 
     /**
      * Update an existing task with validated data.
+     * @param Task $task
+     * @param array $validated
+     * @return Task
      */
     public function update(Task $task, array $validated): Task
     {
@@ -44,6 +52,7 @@ class TaskService
 
     /**
      * Delete a task instance.
+     * @param Task $task
      */
     public function delete(Task $task): void
     {
@@ -52,6 +61,8 @@ class TaskService
 
     /**
      * Toggle task status and return the updated model.
+     * @param Task $task
+     * @return Task
      */
     public function toggleStatus(Task $task): Task
     {
